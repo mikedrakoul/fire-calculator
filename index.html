@@ -1,0 +1,2243 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>FIRE / Financial Independence Calculator</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      margin: 0;
+      padding: 30px 16px;
+      background: #121316;
+      color: #e7e9ee;
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: #1a1c23;
+      border-radius: 14px;
+      padding: 26px;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      text-align: center;
+      font-size: 1.8rem;
+      line-height: 1.2;
+      color: #fff;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #a7acba;
+      margin-bottom: 25px;
+      line-height: 1.5;
+    }
+
+    h2 {
+      margin-top: 0;
+      color: #fff;
+      font-size: 1.15rem;
+    }
+
+    /* =========================
+       STATS
+       ========================= */
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .stat-box {
+      background: #111216;
+      border-radius: 10px;
+      padding: 15px 10px;
+      text-align: center;
+      min-width: 0;
+    }
+
+    .stat-value {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #4da6ff;
+      margin-bottom: 5px;
+      line-height: 1.2;
+      overflow-wrap: anywhere;
+    }
+
+    .stat-label {
+      font-size: 0.82rem;
+      color: #9ea4b3;
+      line-height: 1.35;
+    }
+
+    /* =========================
+       CONTROLS
+       ========================= */
+
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 22px;
+    }
+
+    .control-group {
+      background: #222530;
+      border-radius: 10px;
+      padding: 15px;
+      min-width: 0;
+    }
+
+    .control-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      color: #d5d8df;
+      font-size: 0.92rem;
+      line-height: 1.35;
+      margin-bottom: 10px;
+    }
+
+    /* =========================
+       EDITABLE INPUT
+       ========================= */
+
+    .input-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      flex-shrink: 0;
+    }
+
+    .editable-input {
+      width: 125px;
+      min-height: 38px;
+      padding: 7px 9px;
+
+      border-radius: 7px;
+      border: 1px solid #3b3f4c;
+
+      background: #171920;
+      color: #4da6ff;
+
+      font-size: 0.95rem;
+      font-weight: 700;
+
+      /* ΑΡΙΣΤΕΡΗ ΣΤΟΙΧΙΣΗ */
+      text-align: left;
+
+      outline: none;
+
+      transition:
+        border-color 0.15s,
+        box-shadow 0.15s;
+    }
+
+    .editable-input:focus {
+      border-color: #4da6ff;
+      box-shadow:
+        0 0 0 2px rgba(77, 166, 255, 0.15);
+    }
+
+    .unit {
+      color: #8f95a4;
+      font-size: 0.82rem;
+      white-space: nowrap;
+    }
+
+    /* =========================
+       RANGE SLIDER
+       ========================= */
+
+    input[type="range"] {
+      width: 100%;
+      display: block;
+
+      cursor: pointer;
+
+      accent-color: #4da6ff;
+
+      min-height: 24px;
+      margin-top: 3px;
+    }
+
+    /* =========================
+       CHART
+       ========================= */
+
+    .chart-container {
+      position: relative;
+      width: 100%;
+      height: 420px;
+    }
+
+    /* =========================
+       INFO
+       ========================= */
+
+    .info {
+      background: #171920;
+      border-left: 4px solid #4da6ff;
+
+      padding: 15px 17px;
+
+      border-radius: 7px;
+
+      line-height: 1.6;
+
+      color: #c9cdd7;
+
+      margin-top: 20px;
+
+      overflow-wrap: break-word;
+    }
+
+    .success {
+      color: #65d391;
+      font-weight: 700;
+    }
+
+    .warning {
+      color: #f0b45a;
+      font-weight: 700;
+    }
+
+    .danger {
+      color: #ef7373;
+      font-weight: 700;
+    }
+
+    .small {
+      font-size: 0.82rem;
+      color: #8f95a4;
+      line-height: 1.5;
+      margin-top: 10px;
+    }
+
+    .section-title {
+      margin-bottom: 15px;
+    }
+
+    /* =========================
+       TABLET
+       ========================= */
+
+    @media (max-width: 800px) {
+
+      body {
+        padding: 20px 12px;
+      }
+
+      .card {
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .controls {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .chart-container {
+        height: 380px;
+      }
+    }
+
+    /* =========================
+       MOBILE
+       ========================= */
+
+    @media (max-width: 600px) {
+
+      body {
+        padding: 10px 8px;
+      }
+
+      .card {
+        padding: 15px;
+        border-radius: 12px;
+        margin-bottom: 12px;
+      }
+
+      h1 {
+        font-size: 1.45rem;
+      }
+
+      .subtitle {
+        font-size: 0.88rem;
+        margin-bottom: 18px;
+      }
+
+      h2 {
+        font-size: 1.05rem;
+      }
+
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        margin-bottom: 18px;
+      }
+
+      .stat-box {
+        padding: 12px 7px;
+      }
+
+      .stat-value {
+        font-size: 1.05rem;
+      }
+
+      .stat-label {
+        font-size: 0.72rem;
+      }
+
+      .controls {
+        margin-top: 16px;
+        gap: 9px;
+      }
+
+      .control-group {
+        padding: 12px;
+      }
+
+      /*
+       * Στο κινητό η ετικέτα και το
+       * πεδίο μπαίνουν σε ξεχωριστές γραμμές.
+       */
+
+      .control-label {
+        display: block;
+        font-size: 0.84rem;
+        margin-bottom: 7px;
+      }
+
+      .input-wrapper {
+        margin-top: 8px;
+        justify-content: flex-start;
+      }
+
+      .editable-input {
+        width: 130px;
+        min-height: 40px;
+
+        font-size: 0.92rem;
+
+        /* ΠΑΝΤΑ ΑΡΙΣΤΕΡΑ */
+        text-align: left;
+      }
+
+      .unit {
+        font-size: 0.8rem;
+      }
+
+      input[type="range"] {
+        min-height: 28px;
+        margin-top: 3px;
+      }
+
+      .chart-container {
+        height: 300px;
+      }
+
+      .info {
+        padding: 12px 13px;
+        margin-top: 14px;
+        font-size: 0.88rem;
+      }
+
+      .small {
+        font-size: 0.75rem;
+      }
+    }
+
+    /* =========================
+       VERY SMALL PHONES
+       ========================= */
+
+    @media (max-width: 380px) {
+
+      body {
+        padding: 8px 6px;
+      }
+
+      .card {
+        padding: 12px;
+      }
+
+      h1 {
+        font-size: 1.3rem;
+      }
+
+      .subtitle {
+        font-size: 0.82rem;
+      }
+
+      .stat-value {
+        font-size: 0.95rem;
+      }
+
+      .stat-label {
+        font-size: 0.68rem;
+      }
+
+      .control-group {
+        padding: 10px;
+      }
+
+      .control-label {
+        font-size: 0.8rem;
+      }
+
+      .editable-input {
+        width: 120px;
+        font-size: 0.87rem;
+      }
+
+      .chart-container {
+        height: 270px;
+      }
+    }
+  </style>
+</head>
+
+
+<body>
+
+<div class="container">
+
+  <!-- =========================
+       MAIN CARD
+       ========================= -->
+
+  <div class="card">
+
+    <h1>
+      FIRE / Financial Independence Calculator
+    </h1>
+
+    <div class="subtitle">
+      Προσομοίωση οικονομικής ανεξαρτησίας με
+      πληθωρισμό, μεταβλητές αποδόσεις και Monte Carlo.
+    </div>
+
+
+    <!-- =========================
+         TOP STATISTICS
+         ========================= -->
+
+    <div class="stats">
+
+      <div class="stat-box">
+
+        <div
+          class="stat-value"
+          id="statInitial"
+        >
+          380.000 €
+        </div>
+
+        <div class="stat-label">
+          Αρχικό Κεφάλαιο
+        </div>
+
+      </div>
+
+
+      <div class="stat-box">
+
+        <div
+          class="stat-value"
+          id="statWithdrawal"
+        >
+          3,16%
+        </div>
+
+        <div class="stat-label">
+          Αρχικό Ποσοστό Ανάληψης
+        </div>
+
+      </div>
+
+
+      <div class="stat-box">
+
+        <div
+          class="stat-value"
+          id="statRealReturn"
+        >
+          3,92%
+        </div>
+
+        <div class="stat-label">
+          Πραγματική Απόδοση
+        </div>
+
+      </div>
+
+
+      <div class="stat-box">
+
+        <div
+          class="stat-value"
+          id="statSuccess"
+        >
+          —
+        </div>
+
+        <div class="stat-label">
+          Monte Carlo Επιτυχία
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- =========================
+         CHART
+         ========================= -->
+
+    <h2 class="section-title">
+      Εξέλιξη χαρτοφυλακίου
+    </h2>
+
+    <div class="chart-container">
+
+      <canvas id="fireChart"></canvas>
+
+    </div>
+
+  </div>
+
+
+  <!-- =========================
+       PARAMETERS
+       ========================= -->
+
+  <div class="card">
+
+    <h2>
+      Παράμετροι
+    </h2>
+
+
+    <div class="controls">
+
+
+      <!-- INITIAL CAPITAL -->
+
+      <div class="control-group">
+
+        <div class="control-label">
+
+          <span>
+            Αρχικό Κεφάλαιο (€)
+          </span>
+
+          <span class="input-wrapper">
+
+            <input
+              class="editable-input"
+              id="initialInput"
+              type="text"
+              inputmode="numeric"
+              value="380000"
+              aria-label="Αρχικό Κεφάλαιο"
+            >
+
+            <span class="unit">
+              €
+            </span>
+
+          </span>
+
+        </div>
+
+
+        <input
+          type="range"
+          id="initial"
+          min="50000"
+          max="1000000"
+          step="5000"
+          value="380000"
+        >
+
+      </div>
+
+
+      <!-- MONTHLY EXPENSE -->
+
+      <div class="control-group">
+
+        <div class="control-label">
+
+          <span>
+            Μηνιαία Έξοδα / Ανάληψη (€)
+          </span>
+
+          <span class="input-wrapper">
+
+            <input
+              class="editable-input"
+              id="monthlyInput"
+              type="text"
+              inputmode="numeric"
+              value="1000"
+              aria-label="Μηνιαία Έξοδα"
+            >
+
+            <span class="unit">
+              €
+            </span>
+
+          </span>
+
+        </div>
+
+
+        <input
+          type="range"
+          id="monthly"
+          min="500"
+          max="5000"
+          step="50"
+          value="1000"
+        >
+
+      </div>
+
+
+      <!-- RETURN -->
+
+      <div class="control-group">
+
+        <div class="control-label">
+
+          <span>
+            Αναμενόμενη Ονομαστική Απόδοση (%)
+          </span>
+
+          <span class="input-wrapper">
+
+            <input
+              class="editable-input"
+              id="returnInput"
+              type="text"
+              inputmode="decimal"
+              value="6"
+              aria-label="Αναμενόμενη Απόδοση"
+            >
+
+            <span class="unit">
+              %
+            </span>
+
+          </span>
+
+        </div>
+
+
+        <input
+          type="range"
+          id="return"
+          min="0"
+          max="12"
+          step="0.5"
+          value="6"
+        >
+
+      </div>
+
+
+      <!-- INFLATION -->
+
+      <div class="control-group">
+
+        <div class="control-label">
+
+          <span>
+            Πληθωρισμός (%)
+          </span>
+
+          <span class="input-wrapper">
+
+            <input
+              class="editable-input"
+              id="inflationInput"
+              type="text"
+              inputmode="decimal"
+              value="2"
+              aria-label="Πληθωρισμός"
+            >
+
+            <span class="unit">
+              %
+            </span>
+
+          </span>
+
+        </div>
+
+
+        <input
+          type="range"
+          id="inflation"
+          min="0"
+          max="8"
+          step="0.1"
+          value="2"
+        >
+
+      </div>
+
+
+      <!-- VOLATILITY -->
+
+      <div class="control-group">
+
+        <div class="control-label">
+
+          <span>
+            Μεταβλητότητα (%)
+          </span>
+
+          <span class="input-wrapper">
+
+            <input
+              class="editable-input"
+              id="volatilityInput"
+              type="text"
+              inputmode="decimal"
+              value="15"
+              aria-label="Μεταβλητότητα"
+            >
+
+            <span class="unit">
+              %
+            </span>
+
+          </span>
+
+        </div>
+
+
+        <input
+          type="range"
+          id="volatility"
+          min="1"
+          max="40"
+          step="1"
+          value="15"
+        >
+
+      </div>
+
+
+      <!-- YEARS -->
+
+      <div class="control-group">
+
+        <div class="control-label">
+
+          <span>
+            Ορίζοντας (έτη)
+          </span>
+
+          <span class="input-wrapper">
+
+            <input
+              class="editable-input"
+              id="yearsInput"
+              type="text"
+              inputmode="numeric"
+              value="30"
+              aria-label="Ορίζοντας"
+            >
+
+            <span class="unit">
+              έτη
+            </span>
+
+          </span>
+
+        </div>
+
+
+        <input
+          type="range"
+          id="years"
+          min="10"
+          max="70"
+          step="1"
+          value="30"
+        >
+
+      </div>
+
+
+      <!-- SIMULATIONS -->
+
+      <div class="control-group">
+
+        <div class="control-label">
+
+          <span>
+            Monte Carlo Προσομοιώσεις
+          </span>
+
+          <span class="input-wrapper">
+
+            <input
+              class="editable-input"
+              id="simulationsInput"
+              type="text"
+              inputmode="numeric"
+              value="5000"
+              aria-label="Monte Carlo Προσομοιώσεις"
+            >
+
+            <span class="unit">
+              φορές
+            </span>
+
+          </span>
+
+        </div>
+
+
+        <input
+          type="range"
+          id="simulations"
+          min="1000"
+          max="20000"
+          step="1000"
+          value="5000"
+        >
+
+      </div>
+
+
+      <!-- EXTRA EXPENSE -->
+
+      <div class="control-group">
+
+        <div class="control-label">
+
+          <span>
+            Έκτακτα έξοδα / έτος (€)
+          </span>
+
+          <span class="input-wrapper">
+
+            <input
+              class="editable-input"
+              id="extraInput"
+              type="text"
+              inputmode="numeric"
+              value="0"
+              aria-label="Έκτακτα έξοδα"
+            >
+
+            <span class="unit">
+              €
+            </span>
+
+          </span>
+
+        </div>
+
+
+        <input
+          type="range"
+          id="extra"
+          min="0"
+          max="30000"
+          step="500"
+          value="0"
+        >
+
+      </div>
+
+    </div>
+
+
+    <!-- =========================
+         SUMMARY
+         ========================= -->
+
+    <div
+      class="info"
+      id="summary"
+    >
+      Υπολογισμός...
+    </div>
+
+
+    <div class="small">
+
+      Η Monte Carlo προσομοίωση χρησιμοποιεί τυχαίες
+      μηνιαίες αποδόσεις γύρω από την αναμενόμενη
+      απόδοση και τη δηλωμένη μεταβλητότητα.
+
+      Δεν αποτελεί πρόβλεψη αγοράς ούτε εγγύηση αποτελέσματος.
+
+    </div>
+
+  </div>
+
+
+  <!-- =========================
+       EXPLANATION
+       ========================= -->
+
+  <div class="card">
+
+    <h2>
+      Τι σημαίνουν οι αριθμοί;
+    </h2>
+
+
+    <div class="info">
+
+      <strong>
+        Αρχικό Ποσοστό Ανάληψης
+      </strong>
+
+      <br>
+
+      Η αρχική ετήσια ανάληψη ως ποσοστό
+      του αρχικού κεφαλαίου.
+
+      <br><br>
+
+
+      <strong>
+        Πραγματική Απόδοση
+      </strong>
+
+      <br>
+
+      Η περίπου ετήσια απόδοση μετά τον πληθωρισμό.
+
+      <br>
+
+      (1 + ονομαστική απόδοση) /
+      (1 + πληθωρισμός) − 1
+
+      <br><br>
+
+
+      <strong>
+        Monte Carlo Επιτυχία
+      </strong>
+
+      <br>
+
+      Το ποσοστό των προσομοιώσεων στις οποίες
+      το χαρτοφυλάκιο παραμένει πάνω από €0
+      μέχρι το τέλος του ορίζοντα.
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+  let chart = null;
+
+
+  /* =========================================
+     FORMATTING
+     ========================================= */
+
+  function formatEuro(value) {
+
+    return value.toLocaleString(
+      "el-GR",
+      {
+        maximumFractionDigits: 0
+      }
+    ) + " €";
+
+  }
+
+
+  function formatPercent(value) {
+
+    return value.toLocaleString(
+      "el-GR",
+      {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }
+    ) + "%";
+
+  }
+
+
+  /* =========================================
+     INPUT PARSING
+     ========================================= */
+
+  function parseInput(value) {
+
+    value = String(value)
+      .trim()
+      .replace(/\s/g, "");
+
+
+    if (!value) {
+      return NaN;
+    }
+
+
+    /*
+     * Example:
+     * 380.000,50
+     * → 380000.50
+     */
+
+    if (
+      value.includes(".") &&
+      value.includes(",")
+    ) {
+
+      value =
+        value
+          .replace(/\./g, "")
+          .replace(",", ".");
+
+    }
+
+
+    /*
+     * Example:
+     * 7,5
+     * → 7.5
+     */
+
+    else if (
+      value.includes(",")
+    ) {
+
+      value =
+        value.replace(",", ".");
+
+    }
+
+
+    return Number(value);
+
+  }
+
+
+  function clamp(
+    value,
+    min,
+    max
+  ) {
+
+    return Math.min(
+      Math.max(value, min),
+      max
+    );
+
+  }
+
+
+  /* =========================================
+     RANDOM NORMAL
+     ========================================= */
+
+  function randomNormal() {
+
+    let u = 0;
+    let v = 0;
+
+
+    while (u === 0) {
+      u = Math.random();
+    }
+
+
+    while (v === 0) {
+      v = Math.random();
+    }
+
+
+    return Math.sqrt(
+      -2 * Math.log(u)
+    ) *
+    Math.cos(
+      2 * Math.PI * v
+    );
+
+  }
+
+
+  /* =========================================
+     MONTE CARLO SINGLE SIMULATION
+     ========================================= */
+
+  function simulateOnce(
+    initial,
+    monthlyWithdrawal,
+    annualReturn,
+    annualInflation,
+    annualVolatility,
+    years,
+    extraAnnualExpense
+  ) {
+
+    let balance = initial;
+
+
+    const monthlyBaseReturn =
+      Math.pow(
+        1 + annualReturn,
+        1 / 12
+      ) - 1;
+
+
+    const monthlyVolatility =
+      annualVolatility /
+      Math.sqrt(12);
+
+
+    let withdrawal =
+      monthlyWithdrawal;
+
+
+    for (
+      let year = 0;
+      year < years;
+      year++
+    ) {
+
+      for (
+        let month = 0;
+        month < 12;
+        month++
+      ) {
+
+        const randomReturn =
+          monthlyBaseReturn +
+          randomNormal() *
+          monthlyVolatility;
+
+
+        const safeReturn =
+          Math.max(
+            randomReturn,
+            -0.99
+          );
+
+
+        balance *=
+          1 + safeReturn;
+
+
+        balance -=
+          withdrawal;
+
+
+        /*
+         * Extra annual expense
+         * at the end of each year.
+         */
+
+        if (month === 11) {
+
+          balance -=
+            extraAnnualExpense *
+            Math.pow(
+              1 + annualInflation,
+              year
+            );
+
+        }
+
+
+        if (balance <= 0) {
+
+          return 0;
+
+        }
+
+      }
+
+
+      withdrawal *=
+        1 + annualInflation;
+
+    }
+
+
+    return balance;
+
+  }
+
+
+  /* =========================================
+     DETERMINISTIC
+     ========================================= */
+
+  function calculateDeterministic(
+    initial,
+    monthlyWithdrawal,
+    annualReturn,
+    annualInflation,
+    years,
+    extraAnnualExpense
+  ) {
+
+    let balance = initial;
+
+
+    const monthlyReturn =
+      Math.pow(
+        1 + annualReturn,
+        1 / 12
+      ) - 1;
+
+
+    let withdrawal =
+      monthlyWithdrawal;
+
+
+    const labels = [];
+    const data = [];
+
+
+    labels.push("0");
+    data.push(balance);
+
+
+    for (
+      let year = 1;
+      year <= years;
+      year++
+    ) {
+
+      for (
+        let month = 0;
+        month < 12;
+        month++
+      ) {
+
+        balance *=
+          1 + monthlyReturn;
+
+
+        balance -=
+          withdrawal;
+
+
+        if (balance <= 0) {
+
+          balance = 0;
+
+          break;
+
+        }
+
+      }
+
+
+      /*
+       * Extra annual expense.
+       */
+
+      balance -=
+        extraAnnualExpense *
+        Math.pow(
+          1 + annualInflation,
+          year - 1
+        );
+
+
+      if (balance < 0) {
+        balance = 0;
+      }
+
+
+      labels.push(
+        String(year)
+      );
+
+
+      data.push(
+        balance
+      );
+
+
+      withdrawal *=
+        1 + annualInflation;
+
+
+      if (balance <= 0) {
+
+        for (
+          let remaining = year + 1;
+          remaining <= years;
+          remaining++
+        ) {
+
+          labels.push(
+            String(remaining)
+          );
+
+          data.push(0);
+
+        }
+
+        break;
+
+      }
+
+    }
+
+
+    return {
+      labels,
+      data
+    };
+
+  }
+
+
+  /* =========================================
+     MONTE CARLO
+     ========================================= */
+
+  function calculateMonteCarlo(
+    initial,
+    monthlyWithdrawal,
+    annualReturn,
+    annualInflation,
+    annualVolatility,
+    years,
+    simulations,
+    extraAnnualExpense
+  ) {
+
+    let successful = 0;
+
+    const finalValues = [];
+
+
+    for (
+      let i = 0;
+      i < simulations;
+      i++
+    ) {
+
+      const finalBalance =
+        simulateOnce(
+          initial,
+          monthlyWithdrawal,
+          annualReturn,
+          annualInflation,
+          annualVolatility,
+          years,
+          extraAnnualExpense
+        );
+
+
+      if (
+        finalBalance > 0
+      ) {
+
+        successful++;
+
+      }
+
+
+      finalValues.push(
+        finalBalance
+      );
+
+    }
+
+
+    finalValues.sort(
+      (a, b) => a - b
+    );
+
+
+    const middle =
+      Math.floor(
+        finalValues.length / 2
+      );
+
+
+    const median =
+      finalValues.length % 2 === 0
+
+        ? (
+            finalValues[middle - 1] +
+            finalValues[middle]
+          ) / 2
+
+        : finalValues[middle];
+
+
+    return {
+
+      successRate:
+        successful /
+        simulations *
+        100,
+
+      medianFinal:
+        median
+
+    };
+
+  }
+
+
+  /* =========================================
+     UPDATE FROM INPUT
+     ========================================= */
+
+  function updateFromInput(
+    inputId,
+    sliderId
+  ) {
+
+    const input =
+      document.getElementById(
+        inputId
+      );
+
+
+    const slider =
+      document.getElementById(
+        sliderId
+      );
+
+
+    let value =
+      parseInput(
+        input.value
+      );
+
+
+    /*
+     * If invalid, restore
+     * current slider value.
+     */
+
+    if (
+      !Number.isFinite(value)
+    ) {
+
+      input.value =
+        slider.value;
+
+      return;
+
+    }
+
+
+    const min =
+      Number(slider.min);
+
+
+    const max =
+      Number(slider.max);
+
+
+    const step =
+      Number(slider.step);
+
+
+    /*
+     * Keep within allowed range.
+     */
+
+    value =
+      clamp(
+        value,
+        min,
+        max
+      );
+
+
+    /*
+     * Snap to slider step.
+     */
+
+    if (step > 0) {
+
+      value =
+        Math.round(
+          (value - min) / step
+        ) * step + min;
+
+    }
+
+
+    value =
+      clamp(
+        value,
+        min,
+        max
+      );
+
+
+    /*
+     * Update slider.
+     */
+
+    slider.value =
+      value;
+
+
+    /*
+     * Normalize input.
+     */
+
+    input.value =
+      value;
+
+
+    update();
+
+  }
+
+
+  /* =========================================
+     MAIN UPDATE
+     ========================================= */
+
+  function update() {
+
+    const initial =
+      Number(
+        document.getElementById(
+          "initial"
+        ).value
+      );
+
+
+    const monthlyWithdrawal =
+      Number(
+        document.getElementById(
+          "monthly"
+        ).value
+      );
+
+
+    const annualReturn =
+      Number(
+        document.getElementById(
+          "return"
+        ).value
+      ) / 100;
+
+
+    const inflation =
+      Number(
+        document.getElementById(
+          "inflation"
+        ).value
+      ) / 100;
+
+
+    const volatility =
+      Number(
+        document.getElementById(
+          "volatility"
+        ).value
+      ) / 100;
+
+
+    const years =
+      Number(
+        document.getElementById(
+          "years"
+        ).value
+      );
+
+
+    const simulations =
+      Number(
+        document.getElementById(
+          "simulations"
+        ).value
+      );
+
+
+    const extraAnnualExpense =
+      Number(
+        document.getElementById(
+          "extra"
+        ).value
+      );
+
+
+    /*
+     * Synchronize editable inputs.
+     */
+
+    document.getElementById(
+      "initialInput"
+    ).value = initial;
+
+
+    document.getElementById(
+      "monthlyInput"
+    ).value =
+      monthlyWithdrawal;
+
+
+    document.getElementById(
+      "returnInput"
+    ).value =
+      Number(
+        document.getElementById(
+          "return"
+        ).value
+      );
+
+
+    document.getElementById(
+      "inflationInput"
+    ).value =
+      Number(
+        document.getElementById(
+          "inflation"
+        ).value
+      );
+
+
+    document.getElementById(
+      "volatilityInput"
+    ).value =
+      Number(
+        document.getElementById(
+          "volatility"
+        ).value
+      );
+
+
+    document.getElementById(
+      "yearsInput"
+    ).value =
+      years;
+
+
+    document.getElementById(
+      "simulationsInput"
+    ).value =
+      simulations;
+
+
+    document.getElementById(
+      "extraInput"
+    ).value =
+      extraAnnualExpense;
+
+
+    /* =========================
+       FIRE CALCULATIONS
+       ========================= */
+
+    const annualWithdrawal =
+      monthlyWithdrawal * 12;
+
+
+    const withdrawalRate =
+      annualWithdrawal /
+      initial;
+
+
+    const fireTarget =
+      annualWithdrawal * 25;
+
+
+    const realReturn =
+      (
+        (1 + annualReturn) /
+        (1 + inflation)
+      ) - 1;
+
+
+    /*
+     * Deterministic.
+     */
+
+    const deterministic =
+      calculateDeterministic(
+        initial,
+        monthlyWithdrawal,
+        annualReturn,
+        inflation,
+        years,
+        extraAnnualExpense
+      );
+
+
+    /*
+     * Monte Carlo.
+     */
+
+    const monteCarlo =
+      calculateMonteCarlo(
+        initial,
+        monthlyWithdrawal,
+        annualReturn,
+        inflation,
+        volatility,
+        years,
+        simulations,
+        extraAnnualExpense
+      );
+
+
+    /* =========================
+       STATISTICS
+       ========================= */
+
+    document.getElementById(
+      "statInitial"
+    ).textContent =
+      formatEuro(
+        initial
+      );
+
+
+    document.getElementById(
+      "statWithdrawal"
+    ).textContent =
+      formatPercent(
+        withdrawalRate * 100
+      );
+
+
+    document.getElementById(
+      "statRealReturn"
+    ).textContent =
+      formatPercent(
+        realReturn * 100
+      );
+
+
+    document.getElementById(
+      "statSuccess"
+    ).textContent =
+      monteCarlo.successRate
+        .toFixed(1) +
+      "%";
+
+
+    /* =========================
+       FINAL BALANCE
+       ========================= */
+
+    const finalBalance =
+      deterministic.data[
+        deterministic.data.length - 1
+      ];
+
+
+    /*
+     * Find depletion year.
+     */
+
+    let depletionYear = null;
+
+
+    for (
+      let i = 0;
+      i < deterministic.data.length;
+      i++
+    ) {
+
+      if (
+        deterministic.data[i] <= 0
+      ) {
+
+        depletionYear = i;
+
+        break;
+
+      }
+
+    }
+
+
+    /* =========================
+       SUMMARY
+       ========================= */
+
+    let summary = "";
+
+
+    summary +=
+      "<strong>Στόχος 25×:</strong> " +
+      formatEuro(
+        fireTarget
+      ) +
+      "<br>";
+
+
+    summary +=
+      "<strong>Αρχική ανάληψη:</strong> " +
+      formatEuro(
+        annualWithdrawal
+      ) +
+      " / έτος (" +
+      formatPercent(
+        withdrawalRate * 100
+      ) +
+      ")" +
+      "<br>";
+
+
+    summary +=
+      "<strong>Πραγματική αναμενόμενη απόδοση:</strong> " +
+      formatPercent(
+        realReturn * 100
+      ) +
+      "<br><br>";
+
+
+    if (
+      depletionYear !== null
+    ) {
+
+      summary +=
+        "<span class='danger'>" +
+        "Με τις συγκεκριμένες παραμέτρους, " +
+        "το χαρτοφυλάκιο μηδενίζεται περίπου " +
+        "στο έτος " +
+        depletionYear +
+        " της deterministic προσομοίωσης." +
+        "</span>";
+
+    }
+
+    else {
+
+      summary +=
+        "<span class='success'>" +
+        "Με σταθερή την αναμενόμενη απόδοση, " +
+        "το χαρτοφυλάκιο παραμένει θετικό " +
+        "μέχρι το τέλος του ορίζοντα." +
+        "</span>";
+
+    }
+
+
+    summary +=
+      "<br><br>" +
+      "<strong>Deterministic αξία στη λήξη:</strong> " +
+      formatEuro(
+        finalBalance
+      );
+
+
+    summary +=
+      "<br>" +
+      "<strong>Median Monte Carlo αξία στη λήξη:</strong> " +
+      formatEuro(
+        monteCarlo.medianFinal
+      );
+
+
+    summary +=
+      "<br>" +
+      "<strong>Πιθανότητα να μη μηδενιστεί:</strong> " +
+      monteCarlo.successRate.toFixed(1) +
+      "%";
+
+
+    document.getElementById(
+      "summary"
+    ).innerHTML =
+      summary;
+
+
+    /* =========================
+       CHART
+       ========================= */
+
+    if (chart) {
+      chart.destroy();
+    }
+
+
+    const ctx =
+      document
+        .getElementById(
+          "fireChart"
+        )
+        .getContext("2d");
+
+
+    chart =
+      new Chart(
+        ctx,
+        {
+
+          type: "line",
+
+
+          data: {
+
+            labels:
+              deterministic.labels,
+
+
+            datasets: [
+
+              {
+
+                label:
+                  "Deterministic εξέλιξη",
+
+
+                data:
+                  deterministic.data,
+
+
+                borderColor:
+                  "#4da6ff",
+
+
+                backgroundColor:
+                  "rgba(77,166,255,0.12)",
+
+
+                fill:
+                  true,
+
+
+                tension:
+                  0.25,
+
+
+                pointRadius:
+                  0,
+
+
+                borderWidth:
+                  2
+
+              }
+
+            ]
+
+          },
+
+
+          options: {
+
+            responsive:
+              true,
+
+
+            maintainAspectRatio:
+              false,
+
+
+            interaction: {
+
+              intersect:
+                false,
+
+              mode:
+                "index"
+
+            },
+
+
+            plugins: {
+
+              legend: {
+
+                labels: {
+
+                  color:
+                    "#ffffff",
+
+                  boxWidth:
+                    18,
+
+                  padding:
+                    12
+
+                }
+
+              },
+
+
+              tooltip: {
+
+                callbacks: {
+
+                  label:
+                    function(context) {
+
+                      return (
+                        " " +
+                        formatEuro(
+                          context.parsed.y
+                        )
+                      );
+
+                    }
+
+                }
+
+              }
+
+            },
+
+
+            scales: {
+
+              x: {
+
+                title: {
+
+                  display:
+                    true,
+
+                  text:
+                    "Έτη",
+
+                  color:
+                    "#9ea4b3"
+
+                },
+
+
+                ticks: {
+
+                  color:
+                    "#9ea4b3",
+
+                  maxTicksLimit:
+                    8
+
+                },
+
+
+                grid: {
+
+                  color:
+                    "#292c35"
+
+                }
+
+              },
+
+
+              y: {
+
+                title: {
+
+                  display:
+                    true,
+
+                  text:
+                    "Υπόλοιπο (€)",
+
+                  color:
+                    "#9ea4b3"
+
+                },
+
+
+                ticks: {
+
+                  color:
+                    "#9ea4b3",
+
+
+                  callback:
+                    function(value) {
+
+                      return (
+                        "€" +
+                        Number(value)
+                          .toLocaleString(
+                            "el-GR"
+                          )
+                      );
+
+                    }
+
+                },
+
+
+                grid: {
+
+                  color:
+                    "#292c35"
+
+                }
+
+              }
+
+            }
+
+          }
+
+        }
+      );
+
+  }
+
+
+  /* =========================================
+     INPUT / SLIDER CONNECTIONS
+     ========================================= */
+
+  const sliderPairs = [
+
+    ["initial", "initialInput"],
+
+    ["monthly", "monthlyInput"],
+
+    ["return", "returnInput"],
+
+    ["inflation", "inflationInput"],
+
+    ["volatility", "volatilityInput"],
+
+    ["years", "yearsInput"],
+
+    ["simulations", "simulationsInput"],
+
+    ["extra", "extraInput"]
+
+  ];
+
+
+  sliderPairs.forEach(
+    ([sliderId, inputId]) => {
+
+      const slider =
+        document.getElementById(
+          sliderId
+        );
+
+
+      const input =
+        document.getElementById(
+          inputId
+        );
+
+
+      /*
+       * Moving slider.
+       */
+
+      slider.addEventListener(
+        "input",
+        function() {
+
+          input.value =
+            slider.value;
+
+          update();
+
+        }
+      );
+
+
+      /*
+       * Typing a number.
+       */
+
+      input.addEventListener(
+        "change",
+        function() {
+
+          updateFromInput(
+            inputId,
+            sliderId
+          );
+
+        }
+      );
+
+
+      /*
+       * Pressing Enter.
+       */
+
+      input.addEventListener(
+        "keydown",
+        function(event) {
+
+          if (
+            event.key === "Enter"
+          ) {
+
+            event.preventDefault();
+
+            input.blur();
+
+          }
+
+        }
+      );
+
+    }
+  );
+
+
+  /* =========================================
+     INITIAL CALCULATION
+     ========================================= */
+
+  update();
+
+</script>
+
+</body>
+</html>
