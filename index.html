@@ -186,12 +186,6 @@
       box-shadow: 0 0 0 2px rgba(77, 166, 255, 0.15);
     }
 
-    .unit {
-      color: #8f95a4;
-      font-size: 0.82rem;
-      white-space: nowrap;
-    }
-
     /* =========================
        CHART
        ========================= */
@@ -329,9 +323,6 @@
         width: 38px;
         height: 40px;
       }
-      .unit {
-        font-size: 0.8rem;
-      }
       .chart-container {
         height: 300px;
       }
@@ -445,7 +436,6 @@
             <button class="stepper-btn" type="button" onclick="stepInput('initialInput', -1)">−</button>
             <input class="editable-input" id="initialInput" type="text" inputmode="numeric" value="380000" data-min="50000" data-max="1000000" data-step="5000" aria-label="Αρχικό Κεφάλαιο">
             <button class="stepper-btn" type="button" onclick="stepInput('initialInput', 1)">+</button>
-            <span class="unit">€</span>
           </span>
         </div>
       </div>
@@ -458,7 +448,6 @@
             <button class="stepper-btn" type="button" onclick="stepInput('monthlyInput', -1)">−</button>
             <input class="editable-input" id="monthlyInput" type="text" inputmode="numeric" value="1000" data-min="0" data-max="5000" data-step="50" aria-label="Μηνιαία Έξοδα">
             <button class="stepper-btn" type="button" onclick="stepInput('monthlyInput', 1)">+</button>
-            <span class="unit">€</span>
           </span>
         </div>
       </div>
@@ -471,7 +460,6 @@
             <button class="stepper-btn" type="button" onclick="stepInput('returnInput', -1)">−</button>
             <input class="editable-input" id="returnInput" type="text" inputmode="decimal" value="6" data-min="0" data-max="12" data-step="0.5" aria-label="Αναμενόμενη Απόδοση">
             <button class="stepper-btn" type="button" onclick="stepInput('returnInput', 1)">+</button>
-            <span class="unit">%</span>
           </span>
         </div>
       </div>
@@ -484,7 +472,6 @@
             <button class="stepper-btn" type="button" onclick="stepInput('inflationInput', -1)">−</button>
             <input class="editable-input" id="inflationInput" type="text" inputmode="decimal" value="2" data-min="0" data-max="8" data-step="0.1" aria-label="Πληθωρισμός">
             <button class="stepper-btn" type="button" onclick="stepInput('inflationInput', 1)">+</button>
-            <span class="unit">%</span>
           </span>
         </div>
       </div>
@@ -497,7 +484,6 @@
             <button class="stepper-btn" type="button" onclick="stepInput('volatilityInput', -1)">−</button>
             <input class="editable-input" id="volatilityInput" type="text" inputmode="decimal" value="15" data-min="1" data-max="40" data-step="1" aria-label="Μεταβλητότητα">
             <button class="stepper-btn" type="button" onclick="stepInput('volatilityInput', 1)">+</button>
-            <span class="unit">%</span>
           </span>
         </div>
       </div>
@@ -510,7 +496,6 @@
             <button class="stepper-btn" type="button" onclick="stepInput('yearsInput', -1)">−</button>
             <input class="editable-input" id="yearsInput" type="text" inputmode="numeric" value="30" data-min="10" data-max="70" data-step="1" aria-label="Ορίζοντας">
             <button class="stepper-btn" type="button" onclick="stepInput('yearsInput', 1)">+</button>
-            <span class="unit">έτη</span>
           </span>
         </div>
       </div>
@@ -518,12 +503,11 @@
       <!-- SIMULATIONS -->
       <div class="control-group">
         <div class="control-label">
-          <span>Monte Carlo Προσομοιώσεις</span>
+          <span>Monte Carlo Προσομοιώσεις (φορές)</span>
           <span class="input-wrapper">
             <button class="stepper-btn" type="button" onclick="stepInput('simulationsInput', -1)">−</button>
             <input class="editable-input" id="simulationsInput" type="text" inputmode="numeric" value="5000" data-min="1000" data-max="20000" data-step="1000" aria-label="Monte Carlo Προσομοιώσεις">
             <button class="stepper-btn" type="button" onclick="stepInput('simulationsInput', 1)">+</button>
-            <span class="unit">φορές</span>
           </span>
         </div>
       </div>
@@ -536,7 +520,6 @@
             <button class="stepper-btn" type="button" onclick="stepInput('extraInput', -1)">−</button>
             <input class="editable-input" id="extraInput" type="text" inputmode="numeric" value="0" data-min="0" data-max="30000" data-step="500" aria-label="Έκτακτα έξοδα">
             <button class="stepper-btn" type="button" onclick="stepInput('extraInput', 1)">+</button>
-            <span class="unit">€</span>
           </span>
         </div>
       </div>
